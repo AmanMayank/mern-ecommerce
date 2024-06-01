@@ -4,6 +4,14 @@ const bcrypt = require("bcrypt");
 async function userSignUpController(req, res) {
   try {
     const { email, password, name } = req.body;
+
+    const user = await userModel.findOne({ email });
+
+    if (user) {
+      throw new Error("User already exists");
+    }
+
+    console.log(user);
     if (!email) {
       throw new Error("Please provide email");
     }
@@ -26,7 +34,7 @@ async function userSignUpController(req, res) {
       password: hashPassword,
     };
 
-    const userData = new userModel(payloady);
+    const userData = new userModel(payload);
     const saveUser = userData.save();
 
     res.status(201).json({
@@ -36,8 +44,9 @@ async function userSignUpController(req, res) {
       message: "User created successfully!",
     });
   } catch (err) {
+    console.log(err);
     res.json({
-      message: err,
+      message: err.message || err,
       error: true,
       success: false,
     });
