@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { PiEyesFill, PiSmileyXEyesBold } from "react-icons/pi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import SummaryApi from "../common";
+
+import { toast } from "react-toastify";
+import Context from "../context";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -8,6 +12,9 @@ function Login() {
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
+  const { fetchUserDetails } = useContext(Context);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -20,8 +27,41 @@ function Login() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { url, method } = SummaryApi.signIn;
+
+    const dataResponse = await fetch(url, {
+      method: method,
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const data1 = await dataResponse.json();
+
+    if (data1.success) {
+      toast.success(data1.message, {
+        style: {
+          backgroundColor: "white",
+          color: "#79B259",
+        },
+        progressStyle: {
+          background: "#79B259",
+        },
+      });
+
+      fetchUserDetails();
+
+      navigate("/");
+    }
+
+    if (data1.error) {
+      toast.error(data1.message);
+    }
   };
 
   console.log("data login", data);

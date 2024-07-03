@@ -1,31 +1,46 @@
-import React from "react";
-// import Navbar from "./components/Navbar";
-// import HomeScreen from "./screens/HomeScreen";
-// import ProductScreen from "./screens/ProductScreen";
-// import CartScreen from "./screens/CartScreen";
-// import LoginScreen from "./screens/LoginScreen";
+import React, { useEffect } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Outlet } from "react-router-dom";
+import "./App.css";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import SummaryApi from "./common";
+import Context from "./context";
+import { useDispatch } from "react-redux";
+import { setUserDetails } from "./store/slice/userSlice";
 
 const App = () => {
+  const dispatch = useDispatch();
+  const fetchUserDetails = async () => {
+    const { url, method } = SummaryApi.current_user;
+    const dataResponse = await fetch(url, {
+      method,
+      credentials: "include",
+    });
+
+    const data = await dataResponse.json();
+    if (data.success) {
+      dispatch(setUserDetails(data.data));
+    }
+    console.log(dataResponse, data);
+  };
+
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+
   return (
-    // <Navbar />
-    // // <Router>
-    // //   <Navbar />
-    //   {/* <Switch> */}
-    //   // <Route path="/" component={HomeScreen} exact />
-    //   // <Route path="/product/:id" component={ProductScreen} />
-    //   // <Route path="/cart" component={CartScreen} />
-    //   // <Route path="/login" component={LoginScreen} />
-    //   {/* </Switch> */}
-    // // </Router>
     <>
-      <Header />
-      <main className="min-h-[calc(100vh-120px)]">
-        <Outlet />
-      </main>
-      <Footer />
+      <Context.Provider value={{ fetchUserDetails }}>
+        <ToastContainer />
+        <Header />
+        <main className="min-h-[calc(100vh-120px)]">
+          <Outlet />
+        </main>
+        <Footer />
+      </Context.Provider>
     </>
   );
 };

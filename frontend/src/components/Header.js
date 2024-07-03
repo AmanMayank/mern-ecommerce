@@ -1,10 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaUserAstronaut } from "react-icons/fa6";
 import { FaOpencart } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import SummaryApi from "../common";
+import { toast } from "react-toastify";
+import { setUserDetails } from "../store/slice/userSlice";
 
 function Header() {
+  const user = useSelector((state) => state?.user?.user);
+  const dispatch = useDispatch();
+
+  const [dropDown, setDropDown] = useState(false);
+
+  console.log("user ==== ", user);
+
+  const handleLogout = async () => {
+    const { url, method } = SummaryApi.logout_user;
+    const fetchData = await fetch(url, {
+      method,
+      credentials: "include",
+    });
+
+    const data = await fetchData.json();
+
+    if (data.success) {
+      dispatch(setUserDetails(null));
+      toast.success(data.message, {
+        style: {
+          backgroundColor: "white",
+          color: "#79B259",
+        },
+        progressStyle: {
+          background: "#79B259",
+        },
+      });
+    }
+
+    if (data.error) {
+      toast.error(data.message);
+    }
+  };
+
   return (
     <header className="h-16 shadow-md bg-white ">
       <div className="container mx-auto h-full flex items-center justify-between">
@@ -30,8 +68,40 @@ function Header() {
         </div>
 
         <div className="flex items-center gap-7 justify-between mr-2">
-          <div className="text-3xl cursor-pointer">
-            <FaUserAstronaut />
+          <div className="relative flex justify-center">
+            <div
+              onClick={() => setDropDown(!dropDown)}
+              className="text-3xl cursor-pointer"
+            >
+              {user?.profilePic ? (
+                <img
+                  src={user.profilePic}
+                  className="w-10 h-10 rounded-full"
+                  alt={user?.name}
+                />
+              ) : (
+                <FaUserAstronaut />
+              )}
+            </div>
+            {dropDown && (
+              <div className="absolute bg-white bottom-0 top-11 h-fit shadow-lg rounded">
+                <nav className="flex flex-col">
+                  <Link
+                    to={"admin-panel"}
+                    className="whitespace-nowrap hover:bg-slate-200 p-4"
+                    onClick={() => setDropDown(!dropDown)}
+                  >
+                    Admin Panel
+                  </Link>
+                  <Link
+                    to={"admin-panel"}
+                    className="whitespace-nowrap hover:bg-slate-200 p-4"
+                  >
+                    Admin Panel
+                  </Link>
+                </nav>
+              </div>
+            )}
           </div>
           <div className="text-3xl cursor-pointer relative">
             <span>
@@ -43,11 +113,20 @@ function Header() {
           </div>
 
           <div>
-            <Link to={"/login"}>
-              <button className="px-2 py-2 rounded-lg text-white bg-custom-green font-bold flex items-center hover:bg-custom-green-dark">
-                Login
+            {user?._id ? (
+              <button
+                onClick={handleLogout}
+                className="px-2 py-2 rounded-lg text-white bg-custom-green font-bold flex items-center hover:bg-custom-green-dark"
+              >
+                Logout
               </button>
-            </Link>
+            ) : (
+              <Link to={"/login"}>
+                <button className="px-2 py-2 rounded-lg text-white bg-custom-green font-bold flex items-center hover:bg-custom-green-dark">
+                  Login
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

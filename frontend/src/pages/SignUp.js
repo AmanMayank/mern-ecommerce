@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { PiEyesFill, PiSmileyXEyesBold } from "react-icons/pi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import imageTobase64 from "../helpers/imageTobase64";
+import SummaryApi from "../common";
+import { toast } from "react-toastify";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +17,8 @@ function SignUp() {
     profilePic: "",
   });
 
+  const navigate = useNavigate();
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
 
@@ -26,8 +30,46 @@ function SignUp() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    if (data.password === data.confirmPassword) {
+      e.preventDefault();
+
+      const { url, method } = SummaryApi.signUp;
+
+      const dataResponse = await fetch(url, {
+        method: method,
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const data1 = await dataResponse.json();
+
+      if (data1.success) {
+        toast.success(data1.message, {
+          icon: {
+            color: "red",
+          },
+          style: {
+            backgroundColor: "white",
+            color: "#79B259",
+          },
+          progressStyle: {
+            background: "#79B259",
+          },
+        });
+
+        navigate("/login");
+      }
+
+      if (data1.error) {
+        toast.error(data1.message);
+      }
+      console.log("data", data1);
+    } else {
+      console.log("Kindly enter the same password");
+    }
   };
 
   const handleUploadPic = async (e) => {
