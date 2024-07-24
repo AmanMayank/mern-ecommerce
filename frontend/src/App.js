@@ -24,7 +24,7 @@ const App = () => {
     if (data.success) {
       dispatch(setUserDetails(data.data));
     }
-    console.log(dataResponse, data);
+    // console.log(dataResponse, data);
   };
 
   useEffect(() => {

@@ -17,6 +17,10 @@ const SummaryApi = {
     url: `${domain}/api/logout`,
     method: "post",
   },
+  all_users: {
+    url: `${domain}/api/all-users`,
+    method: "get",
+  },
 };
 
 export default SummaryApi;

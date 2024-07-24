@@ -14,7 +14,7 @@ function Header() {
 
   const [dropDown, setDropDown] = useState(false);
 
-  console.log("user ==== ", user);
+  // console.log("user ==== ", user);
 
   const handleLogout = async () => {
     const { url, method } = SummaryApi.logout_user;
@@ -71,7 +71,7 @@ function Header() {
           <div className="relative flex justify-center">
             <div
               onClick={() => setDropDown(!dropDown)}
-              className="text-3xl cursor-pointer"
+              className="text-3xl md:cursor-pointer"
             >
               {user?.profilePic ? (
                 <img
@@ -84,7 +84,7 @@ function Header() {
               )}
             </div>
             {dropDown && (
-              <div className="absolute bg-white bottom-0 top-11 h-fit shadow-lg rounded">
+              <div className="absolute bg-white bottom-0 top-11 h-fit shadow-lg rounded hidden md:block">
                 <nav className="flex flex-col">
                   <Link
                     to={"admin-panel"}

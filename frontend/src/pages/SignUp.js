@@ -66,7 +66,7 @@ function SignUp() {
       if (data1.error) {
         toast.error(data1.message);
       }
-      console.log("data", data1);
+      // console.log("data", data1);
     } else {
       console.log("Kindly enter the same password");
     }

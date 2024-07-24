@@ -11,7 +11,7 @@ async function userSignUpController(req, res) {
       throw new Error("User already exists");
     }
 
-    console.log(user);
+    // console.log(user);
     if (!email) {
       throw new Error("Please provide email");
     }
