@@ -5,7 +5,7 @@ var jwt = require("jsonwebtoken");
 async function userSignInController(req, res) {
   try {
     const { email, password } = req.body;
-    // console.log(req.body);
+    console.log(req.body);
 
     if (!email) {
       throw new Error("Please provide email");
@@ -16,7 +16,13 @@ async function userSignInController(req, res) {
 
     const user = await userModel.findOne({ email });
 
-    const checkPassword = await bcrypt.compare(password, user.password);
+    if (!user) {
+      throw new Error("Please check your email!");
+    }
+
+    console.log("The current user is", user);
+
+    const checkPassword = bcrypt.compare(password, user.password);
 
     if (checkPassword) {
       try {

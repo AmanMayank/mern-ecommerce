@@ -3,7 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import { FaUserAstronaut } from "react-icons/fa6";
 import { FaOpencart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SummaryApi from "../common";
 import { toast } from "react-toastify";
 import { setUserDetails } from "../store/slice/userSlice";
@@ -11,6 +11,7 @@ import { setUserDetails } from "../store/slice/userSlice";
 function Header() {
   const user = useSelector((state) => state?.user?.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [dropDown, setDropDown] = useState(false);
 
@@ -37,6 +38,8 @@ function Header() {
         },
       });
     }
+
+    navigate("/");
 
     if (data.error) {
       toast.error(data.message);
@@ -69,20 +72,22 @@ function Header() {
 
         <div className="flex items-center gap-7 justify-between mr-2">
           <div className="relative flex justify-center">
-            <div
-              onClick={() => setDropDown(!dropDown)}
-              className="text-3xl md:cursor-pointer"
-            >
-              {user?.profilePic ? (
-                <img
-                  src={user.profilePic}
-                  className="w-10 h-10 rounded-full"
-                  alt={user?.name}
-                />
-              ) : (
-                <FaUserAstronaut />
-              )}
-            </div>
+            {user?._id && (
+              <div
+                onClick={() => setDropDown(!dropDown)}
+                className="text-3xl md:cursor-pointer"
+              >
+                {user?.profilePic ? (
+                  <img
+                    src={user.profilePic}
+                    className="w-10 h-10 rounded-full"
+                    alt={user?.name}
+                  />
+                ) : (
+                  <FaUserAstronaut />
+                )}
+              </div>
+            )}
             {dropDown && (
               <div className="absolute bg-white bottom-0 top-11 h-fit shadow-lg rounded hidden md:block">
                 <nav className="flex flex-col">
@@ -93,12 +98,14 @@ function Header() {
                   >
                     Admin Panel
                   </Link>
-                  <Link
-                    to={"admin-panel"}
-                    className="whitespace-nowrap hover:bg-slate-200 p-4"
-                  >
-                    Admin Panel
-                  </Link>
+                  {user?.role === "ADMIN" && (
+                    <Link
+                      to={"/"}
+                      className="whitespace-nowrap hover:bg-slate-200 p-4"
+                    >
+                      Something
+                    </Link>
+                  )}
                 </nav>
               </div>
             )}

@@ -68,7 +68,7 @@ function SignUp() {
       }
       // console.log("data", data1);
     } else {
-      console.log("Kindly enter the same password");
+      toast.error("Kindly enter the same password");
     }
   };
 
