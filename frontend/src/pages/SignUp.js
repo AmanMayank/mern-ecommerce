@@ -81,6 +81,7 @@ function SignUp() {
         profilePic: imagePic,
       };
     });
+    console.log("upload data===", data);
   };
 
   return (

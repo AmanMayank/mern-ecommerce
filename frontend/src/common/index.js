@@ -25,6 +25,10 @@ const SummaryApi = {
     url: `${domain}/api/update-user`,
     method: "post",
   },
+  upload_image: {
+    url: `${domain}/api/upload-image`,
+    method: "post",
+  },
 };
 
 export default SummaryApi;
