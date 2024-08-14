@@ -16,10 +16,6 @@ const UploadProduct = ({ onClose }) => {
     prodDiscPrice: "",
   });
 
-  const [imageInput, setImageInput] = useState({
-    name: "",
-  });
-
   const inputFile = useRef(null);
 
   const handleOnChange = (e) => {
@@ -30,34 +26,38 @@ const UploadProduct = ({ onClose }) => {
   };
 
   const handleProductUpload = async (e) => {
-    console.log(e.target.files[0]);
     const file = e.target.files[0];
     const imagePic = await imageTobase64(file);
 
-    if (imagePic === imageInput.name) {
-      return console.log("image already uploaded");
+    const imageExists =
+      data.prodImage[0] !== "" &&
+      data.prodImage.some((image) => image?.name === imagePic);
+
+    if (imageExists) {
+      console.log("Image already uploaded");
     } else {
-      setImageInput((prev) => {
+      console.log("coming here 4");
+      setData((prev) => {
         return {
           ...prev,
-          name: imagePic,
+          prodImage: [...prev.prodImage, { name: imagePic }],
         };
       });
+      const { url, method } = SummaryApi.upload_image;
+
+      const response = await fetch(url, {
+        method,
+        credentials: "include",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ name: imagePic }),
+      });
+
+      const update = await response.json();
+
+      console.log("Image upload response", update);
     }
-
-    const { url, method } = SummaryApi.upload_image;
-
-    const response = await fetch(url, {
-      method,
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(imageInput),
-    });
-
-    const update = await response.json();
-    console.log("Image upload response", update);
   };
 
   const handleReset = () => {
@@ -65,6 +65,9 @@ const UploadProduct = ({ onClose }) => {
       inputFile.current.value = "";
     }
   };
+
+  // console.log("Aman", data.prodImage);
+  // console.log("coming here 5", data.prodImage[0].name);
 
   return (
     <div className="fixed w-full h-full top-0 left-0 bottom-0 right-0 flex items-center justify-center bg-slate-200 bg-opacity-40">
@@ -140,14 +143,21 @@ const UploadProduct = ({ onClose }) => {
             </div>
           </label>
 
-          <div>
-            <img
-              src=""
-              width={80}
-              height={80}
-              alt="prod img"
-              className="bg-slate-100 border"
-            />
+          <div className="flex">
+            {data?.prodImage[0]
+              ? data.prodImage.map((item, index) => {
+                  return (
+                    <img
+                      key={index}
+                      src={item.name}
+                      width={80}
+                      height={80}
+                      alt="prod img"
+                      className="bg-slate-100 border"
+                    />
+                  );
+                })
+              : ""}
           </div>
         </form>
       </div>
