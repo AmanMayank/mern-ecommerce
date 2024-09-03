@@ -4,6 +4,7 @@ import productCategory from "../helpers/productCategory";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import SummaryApi from "../common";
 import imageTobase64 from "../helpers/imageTobase64";
+import LargeProductImage from "./LargeProductImage";
 
 const UploadProduct = ({ onClose }) => {
   const [data, setData] = useState({
@@ -16,14 +17,10 @@ const UploadProduct = ({ onClose }) => {
     prodDiscPrice: "",
   });
 
-  const inputFile = useRef(null);
+  const [fullImage, setFullImage] = useState(false);
+  const [activeImageUrl, setActiveImageUrl] = useState("");
 
-  const handleOnChange = (e) => {
-    console.log("Atleast coming here");
-    // setData{(prev) => {
-    //     [name]:value;
-    // }}
-  };
+  const inputFile = useRef(null);
 
   const handleProductUpload = async (e) => {
     const file = e.target.files[0];
@@ -65,6 +62,8 @@ const UploadProduct = ({ onClose }) => {
       inputFile.current.value = "";
     }
   };
+
+  const handleOnChange = () => {};
 
   // console.log("Aman", data.prodImage);
   // console.log("coming here 5", data.prodImage[0].name);
@@ -143,24 +142,43 @@ const UploadProduct = ({ onClose }) => {
             </div>
           </label>
 
-          <div className="flex">
-            {data?.prodImage[0]
-              ? data.prodImage.map((item, index) => {
-                  return (
-                    <img
-                      key={index}
-                      src={item.name}
-                      width={80}
-                      height={80}
-                      alt="prod img"
-                      className="bg-slate-100 border"
-                    />
-                  );
-                })
-              : ""}
+          <div className="flex gap-2">
+            {data?.prodImage[0] ? (
+              data.prodImage.map((item, index) => {
+                return (
+                  <img
+                    key={index}
+                    src={item.name}
+                    width={80}
+                    height={80}
+                    alt="prod img"
+                    className="bg-slate-100 border cursor-pointer"
+                    onClick={() => {
+                      setActiveImageUrl(item.name);
+                      setFullImage(true);
+                    }}
+                  />
+                );
+              })
+            ) : (
+              <p className="text-red-500 text-xs">
+                *Please upload product image
+              </p>
+            )}
           </div>
+
+          <button className="border-2 py-2 px-4 bg-custom-green text-white rounded-md shadow-lg hover:bg-custom-green-dark transition-all hover:text-white hover:text-bold mb-10">
+            Upload Product
+          </button>
         </form>
       </div>
+
+      {fullImage && (
+        <LargeProductImage
+          onClose={() => setFullImage(false)}
+          imageUrl={activeImageUrl}
+        />
+      )}
     </div>
   );
 };
